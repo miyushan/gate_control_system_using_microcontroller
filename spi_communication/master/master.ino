@@ -33,8 +33,8 @@ byte transferAndWait(const byte data) {
 }
 
 void loop(void) {
-  process_slave_1();
-  process_slave_2();
+  process_slave(SS);
+  process_slave(SS_2);
 
   // token generation/ register a user
   if (Serial.available() > 0) {
@@ -56,45 +56,12 @@ void loop(void) {
   }
 }
 
-void process_slave_1() {
-  byte slave_input[token_length];
-  bool valid_user = false;
-
-  digitalWrite(SS, LOW);                                          // enable Slave Select
-
-  byte slave_response = transferAndWait('a');                     // response from slave
-
-  if (slave_response == 1) {
-    // adding bytes to "slave_input" array
-    for (int i = 0; i < token_length; i++) {
-      slave_input[i] = transferAndWait(i);
-    }
-    slave_input[token_length-1] = 'a';
-    Serial.println("");
-
-    String slave_input_str = convertByteArrToString(slave_input); // convert byte array into a string 
-
-    for (int i = 0; i < max_tokens; i++) {
-      if (slave_input_str == gate_1_tokens[i]) {
-        valid_user = true;                                        // verify whether uuid is present in the slave_1_tokens
-      }
-    }
-  }
-
-  digitalWrite(SS, HIGH);                                         // disable Slave Select
-  delay(500);
-
-  if (valid_user) {
-    verify_slave(SS);                                              // send reply to the slave_1
-  }
-}
-
-void process_slave_2() {
+void process_slave(byte slaveSS) {
   byte slave_input[token_length];
   String slave_input_str = "";
   bool valid_user = false;
 
-  digitalWrite(SS_2, LOW);                                        // enable Slave Select
+  digitalWrite(slaveSS, LOW);                                        // enable Slave Select
 
   byte slave_response = transferAndWait('a');                     // response from slave
 
@@ -116,11 +83,11 @@ void process_slave_2() {
     }
   }
 
-  digitalWrite(SS_2, HIGH);                                       // disable Slave Select
+  digitalWrite(slaveSS, HIGH);                                       // disable Slave Select
   delay(500);
 
   if (valid_user) {
-    verify_slave(SS_2);                                              // send reply to the slave_2
+    verify_slave(slaveSS);                                              // send reply to the slave_2
   }
 }
 
@@ -131,7 +98,7 @@ void verify_slave(byte slaveSS) {
   delay(500);
 }
 
-void not_verify_slave1(byte slaveSS) {
+void not_verify_slave(byte slaveSS) {
   digitalWrite(slaveSS, LOW);
   transferAndWait('n');
   digitalWrite(slaveSS, HIGH);
