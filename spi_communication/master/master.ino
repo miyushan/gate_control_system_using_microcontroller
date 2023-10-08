@@ -85,7 +85,7 @@ void process_slave_1() {
   delay(500);
 
   if (valid_user) {
-    verify_slave1();                                              // send reply to the slave_1
+    verify_slave(SS);                                              // send reply to the slave_1
   }
 }
 
@@ -120,33 +120,21 @@ void process_slave_2() {
   delay(500);
 
   if (valid_user) {
-    verify_slave2();                                              // send reply to the slave_2
+    verify_slave(SS_2);                                              // send reply to the slave_2
   }
 }
 
-void verify_slave1() {
-  digitalWrite(SS, LOW);
+void verify_slave(byte slaveSS) {
+  digitalWrite(slaveSS, LOW);
   transferAndWait('g');
-  digitalWrite(SS, HIGH);
-  delay(500);
-}
-void verify_slave2() {
-  digitalWrite(SS_2, LOW);
-  transferAndWait('g');
-  digitalWrite(SS_2, HIGH);
+  digitalWrite(slaveSS, HIGH);
   delay(500);
 }
 
-void not_verify_slave1() {
-  digitalWrite(SS, LOW);
+void not_verify_slave1(byte slaveSS) {
+  digitalWrite(slaveSS, LOW);
   transferAndWait('n');
-  digitalWrite(SS, HIGH);
-  delay(500);
-}
-void not_verify_slave2() {
-  digitalWrite(SS_2, LOW);
-  transferAndWait('n');
-  digitalWrite(SS_2, HIGH);
+  digitalWrite(slaveSS, HIGH);
   delay(500);
 }
 
