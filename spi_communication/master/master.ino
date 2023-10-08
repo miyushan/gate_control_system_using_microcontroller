@@ -90,8 +90,8 @@ void process_slave_1() {
 }
 
 void process_slave_2() {
-  String result = "";
   byte slave_input[token_length];
+  String slave_input_str = "";
   bool valid_user = false;
 
   digitalWrite(SS_2, LOW);                                        // enable Slave Select
@@ -105,7 +105,9 @@ void process_slave_2() {
     }
     slave_input[token_length-1] = 'a';
 
-    String slave_input_str = convertByteArrToString(slave_input);
+    for (int i = 0; i < token_length; i++) {
+      slave_input_str += char(byteArray[i]);
+    }
 
     for (int i = 0; i < max_tokens; i++) {
       if (slave_input_str == gate_2_tokens[i]) {
@@ -146,15 +148,6 @@ void not_verify_slave2() {
   transferAndWait('n');
   digitalWrite(SS_2, HIGH);
   delay(500);
-}
-
-String convertByteArrToString(byte byteArray[]) {
-  String result = "";
-
-  for (int i = 0; i < token_length; i++) {
-    result += char(byteArray[i]);
-  }
-  return result;
 }
 
 String generateToken() {
